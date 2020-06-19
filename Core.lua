@@ -48,6 +48,7 @@ function ABC:CleanBags(dungeon, profile)
 
 	local insecurities = 0;
 	local qualities = 0;
+	local deletions = 0;
 	local list = self.db.profiles[dungeon] and self.db.profiles[dungeon][profile] or {};
 
 	self:Print("Start cleaning your bags.");
@@ -63,8 +64,10 @@ function ABC:CleanBags(dungeon, profile)
 					insecurities = insecurities + 1;
 					self:Printf("%s |cffff0000was not deleted due to its insecure state|r. Approve it using: |c0000ffff/abc approve %s|r", itemlink, itemid);
 				else
-					_G.PickupContainerItem(b, s)
-					_G.DeleteCursorItem()
+					_G.PickupContainerItem(b, s);
+					_G.DeleteCursorItem();
+
+					deletions = deletions + 1;
 				end
 			end
 		end
@@ -79,8 +82,9 @@ function ABC:CleanBags(dungeon, profile)
 	if( qualities >= 1 ) then
 		self:Printf("%s items were not deleted due to their higher quality.", qualities);
 	end
-
-	self:Print("Bags cleaned.");
+	if( deletions >= 0 ) then
+		self:Printf("Finished cleaning %s bag slots.", deletions);
+	end
 end
 
 -----------------------------------------
