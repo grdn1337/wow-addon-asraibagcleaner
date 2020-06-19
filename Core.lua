@@ -114,6 +114,7 @@ function ABC:Boot()
 	self:RegisterComm("abcreq", "OnComm");
 	self:RegisterComm("abcok", "OnComm");
 	self:RegisterComm("abcdata", "OnComm");
+	self:RegisterComm("abcthx", "OnComm");
 	self:RegisterChatCommand("abc", "HandleChatCommand");
 end
 ABC:RegisterEvent("PLAYER_ENTERING_WORLD", "Boot");
@@ -132,6 +133,7 @@ function ABC:OnComm(command, data, distribution, sender)
 		if( not(success and type(t) == "table" and t.dungeon and t.profile) ) then return end
 		if( not(self:hasDungeon(t.dungeon) and self:hasDungeonProfile(t.dungeon, t.profile)) ) then return end
 
+		self:Printf("Sync accepted by %s, sending data.", sender);
 		self:SendCommMessage("abcdata", self:Serialize({dungeon = t.dungeon, profile = t.profile, data = self.db.profiles[t.dungeon][t.profile]}), "WHISPER", sender);
 	elseif( command == "abcdata" ) then
 		local success, t = self:Deserialize(data);
@@ -162,6 +164,9 @@ function ABC:OnComm(command, data, distribution, sender)
 		self:RebuildSecureIndex();
 
 		self:Printf("Sync from %s finished. %s inserted, %s confirmed, %s deleted.", sender, inserted, confirmed, deleted);
+		self:SendCommMessage("abcthx", "!", "WHISPER", sender);
+	elseif( command == "abcthx" ) then
+		self:Printf("Sync to %s finished.", sender);
 	else
 
 	end
@@ -291,6 +296,7 @@ function ABC:HandleChatCommand(line)
 		elseif( not self:hasDungeonProfile(arg2, arg3) ) then
 			self:Printf("Profile [%s] for dungeon [%s] does not exist.", arg3, arg2);
 		else 
+			self:Printf("Requesting %s for syncing dungeon [%s] profile [%s].", arg1, arg2, arg3);
 			self:SendCommMessage("abcreq", self:Serialize({dungeon = arg2, profile = arg3}), "WHISPER", arg1);
 		end
 	elseif( command == "approve" ) then
