@@ -331,7 +331,7 @@ function ABC:HandleChatCommand(line)
 				end
 
 				if( occurance > 0 ) then
-					self:Printf("Item %s approvved.", arg1);
+					self:Printf("Item %s approved.", arg1);
 				else
 					self:Printf("No item of %s found and approved.", arg1);
 				end
