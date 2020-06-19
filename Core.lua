@@ -4,7 +4,6 @@
 
 local AddonName, ABC = ...;
 LibStub("AceEvent-3.0"):Embed(ABC);
-LibStub("AceTimer-3.0"):Embed(ABC);
 LibStub("AceComm-3.0"):Embed(ABC);
 LibStub("AceConsole-3.0"):Embed(ABC);
 LibStub("AceSerializer-3.0"):Embed(ABC);
