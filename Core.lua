@@ -104,7 +104,7 @@ function ABC:Boot()
 			end
 
 			for i, itemid in ipairs(t) do
-				self.db.profiles[dungeon][profile][itemid] = 3; -- 1: auto
+				self.db.profiles[dungeon][profile][itemid] = 1; -- 1: auto
 			end
 		end
 	end
