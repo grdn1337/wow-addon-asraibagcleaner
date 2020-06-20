@@ -2,8 +2,8 @@
 ..\FrameXML\UI.xsd">
 
 <!--@non-debug@
-<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 <Script file="Libs\LibStub\Libstub.lua"/>
+<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 
 <Include file="Libs\iLib\lib.xml"/>
 <Include file="Libs\LibDialog-1.0\lib.xml"/>
