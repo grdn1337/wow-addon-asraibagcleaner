@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Title: AsraiBagCleaner
-## Version: 1.13.5
+## Version: 1.13.6
 ## Notes: Stores item ids for deletion macros.
 ## Author: grdn
 ## SavedVariables: AsraiBagCleanerDB
