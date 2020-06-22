@@ -42,7 +42,10 @@ LibStub("iLib"):Register(AddonName, nil, ABC);
 -- Variables, functions and colors
 -----------------------------------------
 
-function ABC:CleanBags(dungeon, profile) 
+function ABC:CleanBags(dungeon, profile, silent)
+	if( not(dungeon and profile) )  then
+		self:Print("Usage in macro: |c0000ffff/run AsraiBagCleaner:CleanBags( 'DUNGEON', 'PROFILE' )|r");
+	end
 	self:RebuildSecureIndex();
 
 	local insecurities = 0;
@@ -50,7 +53,9 @@ function ABC:CleanBags(dungeon, profile)
 	local deletions = 0;
 	local list = self.db.profiles[dungeon] and self.db.profiles[dungeon][profile] or {};
 
-	self:Print("Start cleaning your bags.");
+	if( not silent ) then
+		self:Print("Start cleaning your bags.");
+	end
 	
 	for b = 0, 4 do
 		for s = 1, 32 do
@@ -63,8 +68,8 @@ function ABC:CleanBags(dungeon, profile)
 					insecurities = insecurities + 1;
 					self:Printf("%s |cffff0000was not deleted due to its insecure state|r. Approve it using: |c0000ffff/abc approve %s|r", itemlink, itemid);
 				else
-					_G.PickupContainerItem(b, s);
-					_G.DeleteCursorItem();
+					-- _G.PickupContainerItem(b, s);
+					-- _G.DeleteCursorItem();
 
 					deletions = deletions + 1;
 				end
@@ -72,18 +77,32 @@ function ABC:CleanBags(dungeon, profile)
 		end
 	end
 
-	self:Print("Report =============================================");
+	if( not silent ) then
+		self:Print("Report =============================================");
+	end
 	
 	if( insecurities > 1 ) then
 		self:Printf("|cffff0000There where %s slots of unapproved items.|r", insecurities);
-		self:Print("Approve them all by once using: |c0000ffff/abc approve all|r");
+		if( not silent ) then
+			self:Print("Approve them all by once using: |c0000ffff/abc approve all|r");
+		end
 	end
 	if( qualities >= 1 ) then
-		self:Printf("%s items were not deleted due to their higher quality.", qualities);
+		if( not silent ) then
+			self:Printf("%s items were not deleted due to their higher quality.", qualities);
+		end
 	end
 	if( deletions >= 0 ) then
 		self:Printf("Finished cleaning %s bag slots.", deletions);
 	end
+end
+
+function ABC:CleanBagsSilent(dungeon, profile) 
+	if( not(dungeon and profile) ) then
+		self:Print("Usage in macro: |c0000ffff/run AsraiBagCleaner:CleanBagsSilent( 'DUNGEON', 'PROFILE' )|r");
+	end
+	
+	self:CleanBags(dungeon, profile, true);
 end
 
 -----------------------------------------
@@ -139,6 +158,9 @@ function ABC:OnComm(command, data, distribution, sender)
 		local success, t = self:Deserialize(data);
 		if( not(success and type(t) == "table" and t.dungeon and t.profile and type(t.data) == "table") ) then return end
 
+		t.dungeon = t.dungeon.."2";
+		t.profile = t.profile.."2";
+
 		local dungeon = self.db.profiles[t.dungeon] or {};
 		local profile = dungeon[t.profile] or {};
 
@@ -160,6 +182,7 @@ function ABC:OnComm(command, data, distribution, sender)
 			end
 		end
 
+		self.db.profiles[t.dungeon] = dungeon;
 		self.db.profiles[t.dungeon][t.profile] = profile;
 		self:RebuildSecureIndex();
 
@@ -214,7 +237,7 @@ function ABC:HandleChatCommand(line)
 		self:Printf("Registered dungeons: %s", getTableKeys(self.db.profiles));
 	elseif( command == "profiles" ) then
 		if( self:hasDungeon(arg1) ) then
-			self:Printf("Registered profiles for [%s]: %s", arg1, getTableKeys(self.db[arg1]));
+			self:Printf("Registered profiles for [%s]: %s", arg1, getTableKeys(self.db.profiles[arg1]));
 		else
 			self:Printf("Dungeon [%s] does not exist.", arg1);
 		end
@@ -236,7 +259,7 @@ function ABC:HandleChatCommand(line)
 			elseif( self:hasDungeonProfile(arg2, arg3) ) then
 				self:Printf("Profile [%s] for dungeon [%s] already exists.", arg3, arg2);
 			else
-				self.db.profile[arg2][arg3] = {};
+				self.db.profiles[arg2][arg3] = {};
 				self:Printf("Profile [%s] for dungeon [%s] created. You may now add items to it using: |c0000ffff/abc add DUNGEONNAME PROFILENAME ITEMID|r", arg3, arg2);
 			end
 		else
