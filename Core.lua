@@ -68,8 +68,8 @@ function ABC:CleanBags(dungeon, profile, silent)
 					insecurities = insecurities + 1;
 					self:Printf("%s |cffff0000was not deleted due to its insecure state|r. Approve it using: |c0000ffff/abc approve %s|r", itemlink, itemid);
 				else
-					-- _G.PickupContainerItem(b, s);
-					-- _G.DeleteCursorItem();
+					_G.PickupContainerItem(b, s);
+					_G.DeleteCursorItem();
 
 					deletions = deletions + 1;
 				end
